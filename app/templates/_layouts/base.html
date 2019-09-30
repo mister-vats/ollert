@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollert by Ankush Vats</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/modernizer.js') }}"></script>
+    {% block head %}
+    
+    {% endblock %}
+</head>
+
+<body>
+    <!-- navigation -->
+    <nav class="pages-nav">
+        {% block nav %}{% endblock %}
+    </nav>
+    <!-- /navigation-->
+    <!-- pages stack -->
+    <div class="pages-stack">
+        <!-- page -->
+        {% block pagestack %}{% endblock %}
+
+    </div>
+    <!-- /pages-stack -->
+    <button class="menu-button">
+        <div id="board">
+            <div class="icon boards"></div>
+            <h5 class="header-item">Boards</h5>
+        </div>
+    </button>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plugins.js') }}"></script>
+    {% block scripts %} {% endblock %}
+</body>
+
+</html>

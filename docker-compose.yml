@@ -1,0 +1,27 @@
+version: '3'
+services:
+  app:
+    build: .
+    container_name: project_tracker
+    ports:
+      - 8000:8000
+    links:
+      - database:db
+    depends_on:
+      - database
+    env_file:
+      - .env
+    volumes:
+      - "${PROJECTPATH}:/app"
+    restart: always
+    environment:
+      - PYTHONUNBUFFERED=0
+
+  database:
+    container_name: project_tracker_mongo
+    image: mongo
+    restart: always
+    ports:
+      - '27017:27017'
+    expose:
+      - '27017'
