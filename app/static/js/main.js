@@ -135,3 +135,20 @@ function drop(ev) {
     var data = ev.dataTransfer.getData("text");
     ev.target.closest('.card-container').appendChild(document.getElementById(data));
 }
+
+
+
+function getBoards() {
+    $.ajax({
+        url: '/api/board',
+        method: 'GET',
+        contentType: 'application/json',
+        success: function(data) {
+            template = $('#page').html()
+            console.log(template)
+            html = ejs.render(template, {'boards': data})
+            $('.pages-stack').append(html)
+        }
+    })
+}
+getBoards()

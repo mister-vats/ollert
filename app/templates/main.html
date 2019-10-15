@@ -12,45 +12,44 @@
         </script>
         <script type="template" id="page">
             <!--Insert the same page ID here-->
-            <div class="page" id="">
-                <header>
-                    <div class="board">
-                        
-                    </div>
-                    <div id="search">
-                        <div class="icon search"></div>
-                        <h5 class="q" class="header-item" contenteditable="true">Search..</h5>
-                    </div>
-                    <div class="branding">
-                        <div class="logo"></div>
-                    </div>
-                    <div class="custom"></div>
-                    <div id="fullscreen-toggle">
-                        <div class="icon fullscreen"></div>
-                        <h5 class="header-item" onclick="toggleFullscreen()">fullscreen</h5>
-                    </div>
-                    <div class="nameplate">
-                        <img src="{{user}}" alt="" class="user-pic">
-                    </div>
-                </header>
-                <div class="page-header">
-                    <div></div>
-                    <div class="board-icon">
+            <% for (i in boards) { %>
+                <div class="page" id="<%= boards[i].id %>">
+                    <header>
+                        <div class="board">
 
-                    </div>
-                    <div class="board-name-wrapper">
-                        <h3 class="title">Planner Board</h3>
-                        <p class="subtitle">Restricted Access</p>
-                    </div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div class="lane-container">
+                        </div>
+                        <div id="search">
+                            <div class="icon search"></div>
+                            <h5 class="q" class="header-item" contenteditable="true">Search..</h5>
+                        </div>
+                        <div class="branding">
+                            <div class="logo"></div>
+                        </div>
+                        <div class="custom"></div>
+                        <div id="fullscreen-toggle">
+                            <div class="icon fullscreen"></div>
+                            <h5 class="header-item" onclick="toggleFullscreen()">fullscreen</h5>
+                        </div>
+                        <div class="nameplate">
+                            <img src="" alt="" class="user-pic">
+                        </div>
+                    </header>
+                    <div class="page-header">
+                        <div></div>
+                        <div class="board-icon">
 
+                        </div>
+                        <div class="board-name-wrapper">
+                            <h3 class="title">Planner Board</h3>
+                            <p class="subtitle">Restricted Access</p>
+                        </div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <div class="lane-container">
+                    </div>
                 </div>
-                
-            </div>
-        
+            <% } %>
         </script>
 
         <script type="template" id="lanes">
