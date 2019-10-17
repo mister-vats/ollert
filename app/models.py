@@ -2,10 +2,10 @@ from mongoengine import Document, fields
 
 
 class Board(Document):
-
     title = fields.StringField()
     description = fields.StringField()
     lanes = fields.ListField(fields.LazyReferenceField('Lane'))
+    access_level = fields.IntField()
 
 
 class Lane(Document):
@@ -19,3 +19,20 @@ class Card(Document):
     lane = fields.LazyReferenceField('Lane')
     title = fields.StringField()
     description = fields.StringField()
+    ctype = fields.IntField()
+
+
+class User(Document):
+    email = fields.EmailField()
+    password = fields.StringField()
+    name = fields.StringField()
+    acquisition_date = fields.DateTimeField()
+    last_login = fields.DateTimeField()
+    boards = fields.ListField(fields.LazyReferenceField('Board'))
+
+class BoardAccessMatrix(Document):
+    board = fields.LazyReferenceField('Board')
+    user = fields.LazyReferenceField('User')
+    level = fields.StringField()
+
+

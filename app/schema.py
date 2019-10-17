@@ -28,6 +28,7 @@ class CardSchema(Schema):
     id = fields.String()
     title = fields.String()
     description = fields.String()
+    ctype = fields.String()
     lane = fields.Nested(DocumentIdSchema)
 
 

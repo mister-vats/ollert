@@ -88,8 +88,8 @@ def create_card():
 @app.route('/api/card', methods=['GET'])
 def get_cards():
     lane_id = request.args.get('laneId')
-    cards = LaneHandler.get(lane_id)
-    resp = LaneSchema(many=True).dumps(cards)
+    cards = CardHandler.get(lane_id)
+    resp = CardSchema(many=True).dumps(cards)
     return app.response_class(
         response=resp,
         status=200,

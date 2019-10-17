@@ -17,6 +17,32 @@
 </head>
 
 <body>
+    <header>
+        <div class="board">
+            <!-- /pages-stack -->
+            <button class="menu-button">
+                <div id="board">
+                    <div class="icon boards"></div>
+                    <h5 class="header-item">Boards</h5>
+                </div>
+            </button>
+        </div>
+        <div id="search">
+            <div class="icon search"></div>
+            <h5 class="q" class="header-item" contenteditable="true">Search..</h5>
+        </div>
+        <div class="branding">
+            <div class="logo"></div>
+        </div>
+        <div class="custom"></div>
+        <div id="fullscreen-toggle">
+            <div class="icon fullscreen"></div>
+            <h5 class="header-item" onclick="toggleFullscreen()">fullscreen</h5>
+        </div>
+        <div class="nameplate">
+            <img src="" alt="" class="user-pic">
+        </div>
+    </header>
     <!-- navigation -->
     <nav class="pages-nav">
         {% block nav %}{% endblock %}
@@ -28,13 +54,6 @@
         {% block pagestack %}{% endblock %}
 
     </div>
-    <!-- /pages-stack -->
-    <button class="menu-button">
-        <div id="board">
-            <div class="icon boards"></div>
-            <h5 class="header-item">Boards</h5>
-        </div>
-    </button>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://vise.s3.ap-south-1.amazonaws.com/static/js/ejs.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
