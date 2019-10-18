@@ -2,7 +2,9 @@ from bson import ObjectId
 from app.models import (
     Board,
     Lane,
-    Card
+    Card,
+    User,
+    BoardAccessMatrix
 )
 
 
@@ -14,6 +16,11 @@ class BoardHandler(object):
         board.title = data.get('title')
         board.description = data.get('description')
         board.save()
+        access = BoardAccessMatrix()
+        access.board = board
+        access.user = User.objects.get(email=data.get('email'))
+        access.level = 'admin'
+        access.save()
         return board
 
     @staticmethod

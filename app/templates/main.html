@@ -5,7 +5,6 @@
 
     {% block pagestack %}
 
-
         
     {% endblock %}
 
@@ -16,39 +15,42 @@
     <div class="pages-nav__item"><a class="link link--page" href="#<%= boards[i].id %>"><%= boards[i].title %></a></div>
     <% } %>
     </script>
+
     <script type="template" id="page">
-                <!--Insert the same page ID here-->
-                <% for (i in boards) { %>
-    <div class="page" id="<%= boards[i].id %>">
-       
-        <div class="page-header">
-            <div></div>
-            <div class="board-icon">
-    
-            </div>
-            <div class="board-name-wrapper">
-                <h3 class="title"><%= boards[i].title %></h3>
-                <p class="subtitle"><%= boards[i].description %></p>
-            </div>
-            <div></div>
-            <div></div>
-        </div>
-        <div class="lane-scroll-container">
-            <div class="lane-container" data-lanes="<%= boards[i].lanes.length %>">
-                <% for (j in boards[i].lanes) { %>
-                <div id="<%= boards[i].lanes[j]._id %>" class="lane">
-                    <div class="lane-title">
-                        <div class="pointer"></div>
-                        <h3 class="title"><%= boards[i].lanes[j].title %></h3>
+        <% for (i in boards) { %>
+
+            <div class="page" id="<%= boards[i].id %>">
+
+                <div class="page-header">
+                    <div></div>
+                    <div class="board-icon">
+
                     </div>
-                    <div class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="board-name-wrapper">
+                        <h3 class="title"><%= boards[i].title %></h3>
+                        <p class="subtitle"><%= boards[i].description %></p>
+                    </div>
+                    <div></div>
+                    <div></div>
+                </div>
+
+                <div class="lane-scroll-container">
+                    <div class="lane-container" data-lanes="<%= boards[i].lanes.length %>">
+                        <% for (j in boards[i].lanes) { %>
+                        <div id="<%= boards[i].lanes[j]._id %>" class="lane">
+                            <div class="lane-title">
+                                <div class="pointer"></div>
+                                <h3 class="title"><%= boards[i].lanes[j].title %></h3>
+                            </div>
+                            <div class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            </div>
+                        </div>
+                        <% } %>
                     </div>
                 </div>
-                <% } %>
             </div>
-        </div>
-    </div>
-    <% } %>
+
+        <% } %>
     </script>
     <script type="template" id="card">
                 <!--Plug card id here-->

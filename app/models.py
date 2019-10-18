@@ -23,16 +23,16 @@ class Card(Document):
 
 
 class User(Document):
-    email = fields.EmailField()
+    email = fields.EmailField(unique=True)
     password = fields.StringField()
     name = fields.StringField()
+    profile = fields.URLField()
     acquisition_date = fields.DateTimeField()
     last_login = fields.DateTimeField()
     boards = fields.ListField(fields.LazyReferenceField('Board'))
+
 
 class BoardAccessMatrix(Document):
     board = fields.LazyReferenceField('Board')
     user = fields.LazyReferenceField('User')
     level = fields.StringField()
-
-
