@@ -8,7 +8,7 @@ from app.handler import (
 from app.schema import (
     LaneSchema,
     BoardSchema,
-    CardSchema,
+    CardSchema,git a
     BoardAndLaneSchema
 )
 from app.utils import (
