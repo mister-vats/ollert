@@ -25,13 +25,13 @@ from flask import (
 
 
 @app.route('/')
-@login_required
+# @login_required
 def home():
     return render_template('/main.html', home="Main")
 
 
 @app.route('/api/board/create', methods=['POST'])
-@login_required
+# @login_required
 def create_board():
     board = BoardHandler.post(request.json)
     resp = BoardSchema().dumps(board)
@@ -43,7 +43,7 @@ def create_board():
 
 
 @app.route('/api/board', methods=['GET'])
-@login_required
+# @login_required
 def get_boards():
     board_id = request.args.get('boardId', None)
     boards = BoardHandler.get(board_id)
@@ -59,7 +59,7 @@ def get_boards():
 
 
 @app.route('/api/lane/create', methods=['POST'])
-@login_required
+# @login_required
 def create_lane():
     lane = LaneHandler.post(request.json)
     resp = LaneSchema().dumps(lane)
@@ -71,7 +71,7 @@ def create_lane():
 
 
 @app.route('/api/lane', methods=['GET'])
-@login_required
+# @login_required
 def get_lanes():
     board_id = request.args.get('boardId')
     lanes = LaneHandler.get(board_id)
@@ -84,7 +84,7 @@ def get_lanes():
 
 
 @app.route('/api/card/create', methods=['POST'])
-@login_required
+# @login_required
 def create_card():
     card = CardHandler.post(request.json)
     resp = CardSchema().dumps(card)
@@ -96,7 +96,7 @@ def create_card():
 
 
 @app.route('/api/card', methods=['GET'])
-@login_required
+# @login_required
 def get_cards():
     lane_id = request.args.get('laneId')
     cards = CardHandler.get(lane_id)

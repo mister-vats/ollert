@@ -84,7 +84,6 @@
 
 })(window);
 
-
 /* Get the documentElement (<html>) to display the page in fullscreen */
 var elem = document.documentElement;
 function toggleFullscreen() {
@@ -110,7 +109,7 @@ function openFullscreen() {
 
 /* Close fullscreen */
 function closeFullscreen() {
-    if (document.exitFullscreen) {
+    if (elem.exitFullscreen) {
         document.exitFullscreen();
     } else if (document.mozCancelFullScreen) { /* Firefox */
         document.mozCancelFullScreen();
@@ -127,7 +126,16 @@ function allowDrop(ev) {
 }
 
 function drag(ev) {
+    var element = ev.target
+    setTimeout(function () {
+        element.classList.add('hide-card');
+    });
     ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function dragOver(ev) {
+    var element = ev.srcElement
+    element.classList.remove('hide-card');
 }
 
 function drop(ev) {
@@ -404,3 +412,67 @@ function renderCards() {
 
 getBoards()
 
+
+function addCardToLane(laneID, btn) {
+    if ($(".card.new").length == 0) {
+        console.log(laneID)
+        template = $('#newcard').html()
+        html = ejs.render(template)
+        container = "#" + String(laneID) + "  .card-container"
+        $(container).stop().animate({
+            scrollTop: $(container)[0].scrollHeight
+        }, 800);
+        $(container).append(html)
+        $("#card-title-edit").focus()
+        $(btn).text("Done")
+    }else{
+        // TODO handle the case where a new card already exists on the board
+        console.log("an empty card still exists")
+    }
+}
+
+
+
+function inputSubmit(ev) {
+    if (ev.keyCode == 13) {
+        let title = $("#card-title-edit").val()
+        console.log(title)
+        // TODO call the add card api here 
+        // then re render just one card in the lane it was added to
+        // remove the add card new div from the dom
+    }
+}
+
+
+function addNewLane(boardID) {
+    if( $("#new-lane").length == 0 ){
+        let template = $("#newLane").html()
+        let html = ejs.render(template)
+        container = "#" + String(boardID) +" .lane-container"
+        $(container).append(html)
+        $(container).width($(container).width() + 400)
+        $("#lane-name-edit").focus()
+    } else {
+        console.log("an empty lane still exists")
+    }
+    
+}
+
+function newLaneSubmit(e) {
+    if (e.keyCode == 13) {
+        let title = $("#lane-name-edit").val()
+        console.log(title)
+        // TODO call the add card api here 
+        // then re render just one card in the lane it was added to
+        // remove the add card new div from the dom
+    }
+}
+
+
+$(document).ready(function () {
+
+    $(".datepicker").datepicker({
+        prevText: '<i class="fa fa-fw fa-angle-left"></i>',
+        nextText: '<i class="fa fa-fw fa-angle-right"></i>'
+    });
+});

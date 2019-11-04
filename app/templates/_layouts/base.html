@@ -29,18 +29,18 @@
         </div>
         <div id="search">
             <div class="icon search"></div>
-            <h5 class="q" class="header-item" contenteditable="true">Search..</h5>
+            <input type="text"class="q" name="searchq" id="searchq" placeholder="Search...">
         </div>
         <div class="branding">
             <div class="logo"></div>
         </div>
         <div class="custom"></div>
-        <div id="fullscreen-toggle">
+        <div id="fullscreen-toggl"  onclick="toggleFullscreen()">
             <div class="icon fullscreen"></div>
-            <h5 class="header-item" onclick="toggleFullscreen()">fullscreen</h5>
+            <h5 class="header-item">fullscreen</h5>
         </div>
         <div class="nameplate">
-            <img src="" alt="" class="user-pic">
+            <img src="{{ url_for('static', filename='assets/user.svg') }}" height="32px" width="32px" class="user-pic">
         </div>
     </header>
     <!-- navigation -->
@@ -54,10 +54,17 @@
         {% block pagestack %}{% endblock %}
 
     </div>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <div class="overlay">
+        {% block overlay %}
+        {% endblock %}
+    </div>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="https://vise.s3.ap-south-1.amazonaws.com/static/js/ejs.min.js"></script>
+    
+    
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/plugins.js') }}"></script>
 
     {% block scripts %} {% endblock %}
 </body>
