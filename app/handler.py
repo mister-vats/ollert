@@ -75,7 +75,7 @@ class CardHandler(object):
         lane = Lane.objects.filter(id=ObjectId(data.get('lane_id'))).first()
         card = Card()
         card.title = data.get('title')
-        card.description = data.get('description')
+        card.description = data.get('description', None)
         card.lane = lane
         card.save()
         lane.update(add_to_set__cards=card)
