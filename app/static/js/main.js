@@ -514,6 +514,7 @@ $(document).ready(function () {
 
 
 function moveCardLane(event) {
+    // TODO: Get New Lane ID and CardId into these variables
     laneId = "<LANE ID HERE>"
     cardId = "<CARD ID HERE>"
 
