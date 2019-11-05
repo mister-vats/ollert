@@ -689,7 +689,7 @@ header {
     font-size: 12px;
     font-weight: 600;
     margin-bottom: 5px;
-    margin-top: 30px;
+    margin-top:50px;
 }
 
 #card-overlay .collaborators .member {
@@ -729,11 +729,27 @@ header {
     color: black;
 }
 
-.btn-save-overlay{
+.btn-save-overlay {
     width: 100%;
     height: 40px;
     background-color: #4680FF;
     color: white;
     margin-top: 40px;
     border: 0px;
+}
+
+.close-btn {
+    font-size: 20px;
+    border: 0px;
+    background: transparent;
+    float: right;
+    outline: none;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    margin-bottom: 30px;
+}
+
+.close-btn:hover{
+    background-color: #eee;
 }
