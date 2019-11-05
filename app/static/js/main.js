@@ -395,10 +395,7 @@ function getCards(laneId) {
         },
         contentType: 'application/json',
         success: function (data) {
-            template = $('#card').html()
-            html = ejs.render(template, { 'cards': data })
-            container = "#" + String(laneId) + "  .card-container"
-            $(container).append(html)
+            ejsCardRender(data, laneId)
         }
     })
 }
@@ -412,6 +409,18 @@ function renderCards() {
 
 getBoards()
 
+function ejsCardRender(data, laneId) {
+    template = $('#card').html()
+    html = ejs.render(template, { 'cards': data })
+    container = "#" + String(laneId) + "  .card-container"
+    $(container).append(html)
+}
+
+function ejsLaneRender(data, boardId) {
+    template = $('#lane').html()
+    html = ejs.render(template, { 'lanes': data })
+    $('#'+boardId).find('.lane-container').append(html)
+}
 
 function addCardToLane(laneID, btn) {
     if ($(".card.new").length == 0) {
@@ -436,10 +445,22 @@ function addCardToLane(laneID, btn) {
 function inputSubmit(ev) {
     if (ev.keyCode == 13) {
         let title = $("#card-title-edit").val()
-        console.log(title)
-        // TODO call the add card api here 
-        // then re render just one card in the lane it was added to
-        // remove the add card new div from the dom
+        let lane_id = $($("#card-title-edit").parents('.lane')).attr('id')
+        $.ajax({
+            url: '/api/card/create',
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({"title": title, lane_id: lane_id}),
+            success: function(data) {
+                ejsCardRender([data], lane_id)
+                $('.card.new').remove()
+                $('.add-card-btn').html('Add card')
+            },
+            error: function(data) {
+                alert("Unable to add card")
+            }
+        })
     }
 }
 
@@ -461,8 +482,21 @@ function addNewLane(boardID) {
 function newLaneSubmit(e) {
     if (e.keyCode == 13) {
         let title = $("#lane-name-edit").val()
-        console.log(title)
-        // TODO call the add card api here 
+        let board_id = $($("#lane-name-edit").parents('.page')).attr('id')
+        $.ajax({
+            url: '/api/lane/create',
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({"title": title, board_id: board_id}),
+            success: function(data) {
+                ejsLaneRender([data], board_id)
+                $('#new-lane').remove()
+            },
+            error: function(data) {
+                alert("Unable to add card")
+            }
+        })
         // then re render just one card in the lane it was added to
         // remove the add card new div from the dom
     }
