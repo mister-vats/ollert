@@ -108,6 +108,16 @@ def get_cards():
     )
 
 
+@app.route('/api/card/move', methods=['POST'])
+def move_cards():
+    resp = CardHandler.move(request.json)
+    return app.response_class(
+        response=resp,
+        status=200,
+        mimetype='application/json'
+    )
+
+
 @app.route('/login')
 def login():
     return google.authorize(callback=url_for('authorized', _external=True))

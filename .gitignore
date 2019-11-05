@@ -449,3 +449,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 .env
+*__pycache__*

@@ -510,3 +510,8 @@ $(document).ready(function () {
         nextText: '<i class="fa fa-fw fa-angle-right"></i>'
     });
 });
+
+
+function moveCardLane() {
+
+}

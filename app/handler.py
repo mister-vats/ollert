@@ -84,3 +84,21 @@ class CardHandler(object):
     @staticmethod
     def get(lane_id):
         return Card.objects.filter(lane=ObjectId(lane_id)).all()
+
+    @staticmethod
+    def move(data):
+        new_lane_id = data.get('newLaneId', None)
+        card_id = data.get('cardId', None)
+        card = Card.objects.filter(id=ObjectId(card_id)).first()
+        new_lane = Lane.objects.filter(id=ObjectId(new_lane_id)).first()
+        prev_lane = card.lane.fetch()
+        if card:
+            if new_lane:
+                card.update(set__lane=new_lane)
+                new_lane.update(add_to_set__cards=card)
+            if prev_lane:
+                prev_lane.update(pull__cards=card)
+            return {'status': True, 'msg': 'Ok'}
+        else:
+            return {'status': True, 'msg': 'Failed'}
+
