@@ -107,7 +107,7 @@
 
     <script type="template" id="lane">
         <% for (j in lanes) { %>
-            <div id="<%= lanes[j]._id %>" class="lane">
+            <div id="<%= lanes[j].id %>" class="lane">
                 <div class="lane-title">
                     <div class="pointer"></div>
                     <h3 class="title"><%= lanes[j].title %></h3>
@@ -116,7 +116,7 @@
                 </div>
 
                 <div class="add-card-control-wrapper">
-                    <button class="add-card-btn" onclick="addCardToLane('<%= lanes[j]._id %>', this)"> Add Card</button>
+                    <button class="add-card-btn" onclick="addCardToLane('<%= lanes[j].id %>', this)"> Add Card</button>
                 </div>
             </div>
             <% } %>
