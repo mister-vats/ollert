@@ -21,6 +21,7 @@ from flask import (
     request,
     session,
     url_for,
+    json
 )
 
 
@@ -112,7 +113,7 @@ def get_cards():
 def move_cards():
     resp = CardHandler.move(request.json)
     return app.response_class(
-        response=resp,
+        response=json.dumps(resp),
         status=200,
         mimetype='application/json'
     )

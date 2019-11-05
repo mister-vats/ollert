@@ -142,6 +142,7 @@ function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.closest('.card-container').appendChild(document.getElementById(data));
+    moveCardLane(ev)
 }
 
 var lanes = []
@@ -512,6 +513,21 @@ $(document).ready(function () {
 });
 
 
-function moveCardLane() {
+function moveCardLane(event) {
+    laneId = "<LANE ID HERE>"
+    cardId = "<CARD ID HERE>"
 
+    $.ajax({
+        url: "/api/card/move",
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({"newLaneId": laneId, "cardId": cardId}),
+        success: function(data) {
+            console.log(data)
+        },
+        error: function(data) {
+            alert("Unable to add card")
+        }
+    })
 }

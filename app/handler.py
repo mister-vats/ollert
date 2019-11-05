@@ -92,6 +92,9 @@ class CardHandler(object):
         card = Card.objects.filter(id=ObjectId(card_id)).first()
         new_lane = Lane.objects.filter(id=ObjectId(new_lane_id)).first()
         prev_lane = card.lane.fetch()
+        print(new_lane)
+        print(prev_lane)
+        print(card)
         if card:
             if new_lane:
                 card.update(set__lane=new_lane)
