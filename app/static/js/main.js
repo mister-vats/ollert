@@ -142,6 +142,7 @@ function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.closest('.card-container').appendChild(document.getElementById(data));
+    console.log(ev.target.closest('.card-container'))
     moveCardLane(ev)
 }
 
@@ -504,19 +505,11 @@ function newLaneSubmit(e) {
 }
 
 
-$(document).ready(function () {
-
-    $(".datepicker").datepicker({
-        prevText: '<i class="fa fa-fw fa-angle-left"></i>',
-        nextText: '<i class="fa fa-fw fa-angle-right"></i>'
-    });
-});
-
 
 function moveCardLane(event) {
-    // TODO: Get New Lane ID and CardId into these variables
-    laneId = "<LANE ID HERE>"
-    cardId = "<CARD ID HERE>"
+    // Get target Lane ID and CardId into these variables
+    laneId = event.target.closest('.lane').id
+    cardId = event.dataTransfer.getData("text");
 
     $.ajax({
         url: "/api/card/move",
