@@ -4,74 +4,133 @@
     {% endblock %}
 
     {% block pagestack %}
+        
+    {% endblock %}
+
+    {% block overlay %}
+        <div id="card-overlay hidden">
+            <button class="close-btn">&times;</button>
+            <h5 class="label">Members</h5>
+            <div class="collaborators">
+                <div class="member">
+                    <img src="" alt="" srcset="">
+                </div>
+                <div class="member red">
+                    <p>A</p>
+                </div>
+                <div class="member blue">
+                    <p>B</p>
+                </div>
+                <div class="member yellow">
+                    <p>T</p>
+                </div>
+                <button class="add-member"> + </button>
+            </div>
+            <h5 class="label">Due Date</h5>
+            <input type="datetime-local" name="due-date" id="dueDate">
+            <h5 class="label">Labels</h5>
+            <select name="label" id="card-label" multiple>
+                <option selected value="#F85675">Critical</option>
+                <option selected value="#4680FF">Neutral</option>
+                <option value="#feb64d">Warning</option>
+                <option value="#feb64d">Good</option>
+            </select>
+            <h5 class="label">description</h5>
+            <textarea name="description" id="card-desc" >
+
+            </textarea>
+            <h5 class="label">attachments</h5>
+            <input type="file" name="attachment" id="attachment">
+           
+            <button class="btn-save-overlay">Save</button>
+        </div>
+        <div id="account-overlay">
+
+        </div>
+        
+    {% endblock%}
 
 
-        <script type="template" id="pageNav">
-            <!--Insert page ID here in href-->
-            <div class="pages-nav__item"><a class="link link--page" href="#">Home</a></div>
-        </script>
-        <script type="template" id="page">
-            <!--Insert the same page ID here-->
-            <div class="page" id="">
-                <header>
-                    <div class="board">
-                        
-                    </div>
-                    <div id="search">
-                        <div class="icon search"></div>
-                        <h5 class="q" class="header-item" contenteditable="true">Search..</h5>
-                    </div>
-                    <div class="branding">
-                        <div class="logo"></div>
-                    </div>
-                    <div class="custom"></div>
-                    <div id="fullscreen-toggle">
-                        <div class="icon fullscreen"></div>
-                        <h5 class="header-item" onclick="toggleFullscreen()">fullscreen</h5>
-                    </div>
-                    <div class="nameplate">
-                        <img src="{{user}}" alt="" class="user-pic">
-                    </div>
-                </header>
+    {% block scripts %} 
+    <script type="template" id="pageNav">
+                <!--Insert page ID here in href-->
+                <% for (i in boards) { %>
+    <div class="pages-nav__item"><a class="link link--page" href="#<%= boards[i].id %>"><%= boards[i].title %></a></div>
+    <% } %>
+    </script>
+
+    <script type="template" id="page">
+        <% for (i in boards) { %>
+
+            <div class="page" id="<%= boards[i].id %>">
+
                 <div class="page-header">
                     <div></div>
                     <div class="board-icon">
-
+                        <img src="http://tinygraphs.com/labs/isogrids/hexa16/tinygraphs?theme=bythepool&numcolors=4&size=50&fmt=svg/<%= boards[i].title %>">
                     </div>
                     <div class="board-name-wrapper">
-                        <h3 class="title">Planner Board</h3>
-                        <p class="subtitle">Restricted Access</p>
+                        <h3 class="title"><%= boards[i].title %></h3>
+                        <p class="subtitle"><%= boards[i].description %></p>
                     </div>
                     <div></div>
                     <div></div>
                 </div>
-                <div class="lane-container">
 
+                <div class="lane-scroll-container">
+                    <div class="lane-container" data-lanes="<%= boards[i].lanes.length %>">
+                        <% for (j in boards[i].lanes) { %>
+                        <div id="<%= boards[i].lanes[j]._id %>" class="lane">
+                            <div class="lane-title">
+                                <div class="pointer"></div>
+                                <h3 class="title"><%= boards[i].lanes[j].title %></h3>
+                            </div>
+                            <div class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            </div>
+                            
+                            <div class="add-card-control-wrapper">
+                                <button class="add-card-btn" onclick="addCardToLane('<%= boards[i].lanes[j]._id %>', this)"> Add Card</button>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
                 </div>
-                
+
+                <div class="floating-btn" onclick="addNewLane('<%= boards[i].id %>')">
+                    <div class="add">
+                        <p>&#43;</p>
+                    </div>
+                </div>
             </div>
-        
-        </script>
+        <% } %>
+    </script>
 
-        <script type="template" id="lanes">
-                <div class="lane">
-                    <div class="lane-title">
-                        <div class="pointer"></div>
-                        <h3 class="title"> To Do</h3>
-                    </div>
-                    <div class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
-                    </div>
+    <script type="template" id="lane">
+        <% for (j in lanes) { %>
+            <div id="<%= lanes[j].id %>" class="lane">
+                <div class="lane-title">
+                    <div class="pointer"></div>
+                    <h3 class="title"><%= lanes[j].title %></h3>
                 </div>
-        </script>
+                <div  class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                </div>
 
-        <script type="template" id="cardT1">
-            <!--Plug card id here-->
-            <div class="card" draggable="true" ondragstart="drag(event)" id="">
+                <div class="add-card-control-wrapper">
+                    <button class="add-card-btn" onclick="addCardToLane('<%= lanes[j].id %>', this)"> Add Card</button>
+                </div>
+            </div>
+            <% } %>
+    </script>
+    
+    <script type="template" id="card">
+        <!--Plug card id here-->
+        <% for (k in cards) { %>
+            <div class="card" draggable="true" ondragstart="drag(event)" ondragend="dragOver(event)" id="<%= cards[k].id %>">
                 <div class="tag-container">
                     <div class="tag red"></div>
                     <div class="tag blue"></div>
                 </div>
-                <h4 class="title">Do Something amazing today</h4>
+                <h4 class="title"><%= cards[k].title %></h4>
                 <div class="attachments-wrapper">
                     <div class="icon attachments"></div>
                     <p class="a-qty">3+</p>
@@ -80,8 +139,45 @@
                     <div class="member">
                         <img src="" alt="" srcset="">
                     </div>
+                    <div class="member red">
+                        <p>A</p> 
+                    </div>
+                    <div class="member blue">
+                        <p>B</p> 
+                    </div>
+                    <div class="member yellow">
+                        <p>T</p> 
+                    </div>
                     <button class="add-member"> + </button>
                 </div>
             </div>
-        </script>
-    {% endblock %}
+        <% } %>
+    </script>
+    
+    <script type="template" id="newcard">
+        <!--Plug card id here-->
+        
+        <div class="card new" draggable="true" ondragstart="drag(event)" ondragend="dragOver(event)">
+            <input class="title" type="text" name="card-title" onkeypress="inputSubmit(event)" id="card-title-edit" placeholder="Brief title">
+        </div>
+    </script>
+
+    <script type="template" id="newLane">
+        <div id="new-lane" class="lane">
+            <div class="lane-title">
+                <div class="pointer"></div>
+                <input class="title" type="text" name="lane-title" 
+                onkeypress="newLaneSubmit(event)" id="lane-name-edit" placeholder="Lane Name">
+            </div>
+            <div class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            
+            <!--Plug card id here-->
+        
+            </div>
+                            
+            <div class="add-card-control-wrapper">
+                <!--<button class="add-card-btn" onclick="addCardToLane('', this)">Add Card</button>-->
+            </div>
+        </div>
+    </script>
+{% endblock %}

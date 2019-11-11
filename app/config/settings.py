@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 base_dir = os.path.dirname(os.path.dirname(__file__))
 load_dotenv(os.path.join(base_dir, '.env'))
 
+
 class BaseConfig(object):
     
     DEBUG = False
@@ -27,3 +28,6 @@ class BaseConfig(object):
     CAS_AFTER_LOGIN = os.getenv('CAS_AFTER_LOGIN')
 
     UPLOAD_FOLDER = os.path.join(base_dir, 'media')
+
+    GOOGLE_ID = os.getenv('GOOGLE_ID')
+    GOOGLE_SECRET = os.getenv('GOOGLE_SECRET')

@@ -17,6 +17,32 @@
 </head>
 
 <body>
+    <header>
+        <div class="board">
+            <!-- /pages-stack -->
+            <button class="menu-button">
+                <div id="board">
+                    <div class="icon boards"></div>
+                    <h5 class="header-item">Boards</h5>
+                </div>
+            </button>
+        </div>
+        <div id="search">
+            <div class="icon search"></div>
+            <input type="text"class="q" name="searchq" id="searchq" placeholder="Search...">
+        </div>
+        <div class="branding">
+            <div class="logo"></div>
+        </div>
+        <div class="custom"></div>
+        <div id="fullscreen-toggl"  onclick="toggleFullscreen()">
+            <div class="icon fullscreen"></div>
+            <h5 class="header-item">fullscreen</h5>
+        </div>
+        <div class="nameplate">
+            <img src="{{ url_for('static', filename='assets/user.svg') }}" height="32px" width="32px" class="user-pic">
+        </div>
+    </header>
     <!-- navigation -->
     <nav class="pages-nav">
         {% block nav %}{% endblock %}
@@ -28,15 +54,18 @@
         {% block pagestack %}{% endblock %}
 
     </div>
-    <!-- /pages-stack -->
-    <button class="menu-button">
-        <div id="board">
-            <div class="icon boards"></div>
-            <h5 class="header-item">Boards</h5>
-        </div>
-    </button>
+
+    <div class="overlay">
+        {% block overlay %}
+        {% endblock %}
+    </div>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://vise.s3.ap-south-1.amazonaws.com/static/js/ejs.min.js"></script>
+    
+    
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/plugins.js') }}"></script>
+
     {% block scripts %} {% endblock %}
 </body>
 
