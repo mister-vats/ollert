@@ -4,9 +4,52 @@
     {% endblock %}
 
     {% block pagestack %}
-
         
     {% endblock %}
+
+    {% block overlay %}
+        <div id="card-overlay hidden">
+            <button class="close-btn">&times;</button>
+            <h5 class="label">Members</h5>
+            <div class="collaborators">
+                <div class="member">
+                    <img src="" alt="" srcset="">
+                </div>
+                <div class="member red">
+                    <p>A</p>
+                </div>
+                <div class="member blue">
+                    <p>B</p>
+                </div>
+                <div class="member yellow">
+                    <p>T</p>
+                </div>
+                <button class="add-member"> + </button>
+            </div>
+            <h5 class="label">Due Date</h5>
+            <input type="datetime-local" name="due-date" id="dueDate">
+            <h5 class="label">Labels</h5>
+            <select name="label" id="card-label" multiple>
+                <option selected value="#F85675">Critical</option>
+                <option selected value="#4680FF">Neutral</option>
+                <option value="#feb64d">Warning</option>
+                <option value="#feb64d">Good</option>
+            </select>
+            <h5 class="label">description</h5>
+            <textarea name="description" id="card-desc" >
+
+            </textarea>
+            <h5 class="label">attachments</h5>
+            <input type="file" name="attachment" id="attachment">
+           
+            <button class="btn-save-overlay">Save</button>
+        </div>
+        <div id="account-overlay">
+
+        </div>
+        
+    {% endblock%}
+
 
     {% block scripts %} 
     <script type="template" id="pageNav">
@@ -24,7 +67,7 @@
                 <div class="page-header">
                     <div></div>
                     <div class="board-icon">
-
+                        <img src="http://tinygraphs.com/labs/isogrids/hexa16/tinygraphs?theme=bythepool&numcolors=4&size=50&fmt=svg/<%= boards[i].title %>">
                     </div>
                     <div class="board-name-wrapper">
                         <h3 class="title"><%= boards[i].title %></h3>
@@ -44,34 +87,97 @@
                             </div>
                             <div class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
                             </div>
+                            
+                            <div class="add-card-control-wrapper">
+                                <button class="add-card-btn" onclick="addCardToLane('<%= boards[i].lanes[j]._id %>', this)"> Add Card</button>
+                            </div>
                         </div>
                         <% } %>
                     </div>
                 </div>
-            </div>
 
+                <div class="floating-btn" onclick="addNewLane('<%= boards[i].id %>')">
+                    <div class="add">
+                        <p>&#43;</p>
+                    </div>
+                </div>
+            </div>
         <% } %>
     </script>
-    <script type="template" id="card">
-                <!--Plug card id here-->
-                <% for (k in cards) { %>
-    <div class="card" draggable="true" ondragstart="drag(event)" id="<%= cards[k].id %>">
-        <div class="tag-container">
-            <div class="tag red"></div>
-            <div class="tag blue"></div>
-        </div>
-        <h4 class="title"><%= cards[k].title %></h4>
-        <div class="attachments-wrapper">
-            <div class="icon attachments"></div>
-            <p class="a-qty">3+</p>
-        </div>
-        <div class="collaborators">
-            <div class="member">
-                <img src="" alt="" srcset="">
+
+    <script type="template" id="lane">
+        <% for (j in lanes) { %>
+            <div id="<%= lanes[j].id %>" class="lane">
+                <div class="lane-title">
+                    <div class="pointer"></div>
+                    <h3 class="title"><%= lanes[j].title %></h3>
+                </div>
+                <div  class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                </div>
+
+                <div class="add-card-control-wrapper">
+                    <button class="add-card-btn" onclick="addCardToLane('<%= lanes[j].id %>', this)"> Add Card</button>
+                </div>
             </div>
-            <button class="add-member"> + </button>
-        </div>
-    </div>
-    <% } %>
+            <% } %>
     </script>
-    {% endblock %}
+    
+    <script type="template" id="card">
+        <!--Plug card id here-->
+        <% for (k in cards) { %>
+            <div class="card" draggable="true" ondragstart="drag(event)" ondragend="dragOver(event)" id="<%= cards[k].id %>">
+                <div class="tag-container">
+                    <div class="tag red"></div>
+                    <div class="tag blue"></div>
+                </div>
+                <h4 class="title"><%= cards[k].title %></h4>
+                <div class="attachments-wrapper">
+                    <div class="icon attachments"></div>
+                    <p class="a-qty">3+</p>
+                </div>
+                <div class="collaborators">
+                    <div class="member">
+                        <img src="" alt="" srcset="">
+                    </div>
+                    <div class="member red">
+                        <p>A</p> 
+                    </div>
+                    <div class="member blue">
+                        <p>B</p> 
+                    </div>
+                    <div class="member yellow">
+                        <p>T</p> 
+                    </div>
+                    <button class="add-member"> + </button>
+                </div>
+            </div>
+        <% } %>
+    </script>
+    
+    <script type="template" id="newcard">
+        <!--Plug card id here-->
+        
+        <div class="card new" draggable="true" ondragstart="drag(event)" ondragend="dragOver(event)">
+            <input class="title" type="text" name="card-title" onkeypress="inputSubmit(event)" id="card-title-edit" placeholder="Brief title">
+        </div>
+    </script>
+
+    <script type="template" id="newLane">
+        <div id="new-lane" class="lane">
+            <div class="lane-title">
+                <div class="pointer"></div>
+                <input class="title" type="text" name="lane-title" 
+                onkeypress="newLaneSubmit(event)" id="lane-name-edit" placeholder="Lane Name">
+            </div>
+            <div class="card-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            
+            <!--Plug card id here-->
+        
+            </div>
+                            
+            <div class="add-card-control-wrapper">
+                <!--<button class="add-card-btn" onclick="addCardToLane('', this)">Add Card</button>-->
+            </div>
+        </div>
+    </script>
+{% endblock %}

@@ -84,7 +84,6 @@
 
 })(window);
 
-
 /* Get the documentElement (<html>) to display the page in fullscreen */
 var elem = document.documentElement;
 function toggleFullscreen() {
@@ -110,7 +109,7 @@ function openFullscreen() {
 
 /* Close fullscreen */
 function closeFullscreen() {
-    if (document.exitFullscreen) {
+    if (elem.exitFullscreen) {
         document.exitFullscreen();
     } else if (document.mozCancelFullScreen) { /* Firefox */
         document.mozCancelFullScreen();
@@ -127,13 +126,24 @@ function allowDrop(ev) {
 }
 
 function drag(ev) {
+    var element = ev.target
+    setTimeout(function () {
+        element.classList.add('hide-card');
+    });
     ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function dragOver(ev) {
+    var element = ev.srcElement
+    element.classList.remove('hide-card');
 }
 
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.closest('.card-container').appendChild(document.getElementById(data));
+    console.log(ev.target.closest('.card-container'))
+    moveCardLane(ev)
 }
 
 var lanes = []
@@ -387,10 +397,7 @@ function getCards(laneId) {
         },
         contentType: 'application/json',
         success: function (data) {
-            template = $('#card').html()
-            html = ejs.render(template, { 'cards': data })
-            container = "#" + String(laneId) + "  .card-container"
-            $(container).append(html)
+            ejsCardRender(data, laneId)
         }
     })
 }
@@ -404,3 +411,117 @@ function renderCards() {
 
 getBoards()
 
+function ejsCardRender(data, laneId) {
+    template = $('#card').html()
+    html = ejs.render(template, { 'cards': data })
+    container = "#" + String(laneId) + "  .card-container"
+    $(container).append(html)
+}
+
+function ejsLaneRender(data, boardId) {
+    template = $('#lane').html()
+    html = ejs.render(template, { 'lanes': data })
+    $('#'+boardId).find('.lane-container').append(html)
+}
+
+function addCardToLane(laneID, btn) {
+    if ($(".card.new").length == 0) {
+        console.log(laneID)
+        template = $('#newcard').html()
+        html = ejs.render(template)
+        container = "#" + String(laneID) + "  .card-container"
+        $(container).stop().animate({
+            scrollTop: $(container)[0].scrollHeight
+        }, 800);
+        $(container).append(html)
+        $("#card-title-edit").focus()
+        $(btn).text("Done")
+    }else{
+        // TODO handle the case where a new card already exists on the board
+        console.log("an empty card still exists")
+    }
+}
+
+
+
+function inputSubmit(ev) {
+    if (ev.keyCode == 13) {
+        let title = $("#card-title-edit").val()
+        let lane_id = $($("#card-title-edit").parents('.lane')).attr('id')
+        $.ajax({
+            url: '/api/card/create',
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({"title": title, lane_id: lane_id}),
+            success: function(data) {
+                ejsCardRender([data], lane_id)
+                $('.card.new').remove()
+                $('.add-card-btn').html('Add card')
+            },
+            error: function(data) {
+                alert("Unable to add card")
+            }
+        })
+    }
+}
+
+
+function addNewLane(boardID) {
+    if( $("#new-lane").length == 0 ){
+        let template = $("#newLane").html()
+        let html = ejs.render(template)
+        container = "#" + String(boardID) +" .lane-container"
+        $(container).append(html)
+        $(container).width($(container).width() + 400)
+        $("#lane-name-edit").focus()
+    } else {
+        console.log("an empty lane still exists")
+    }
+    
+}
+
+function newLaneSubmit(e) {
+    if (e.keyCode == 13) {
+        let title = $("#lane-name-edit").val()
+        let board_id = $($("#lane-name-edit").parents('.page')).attr('id')
+        $.ajax({
+            url: '/api/lane/create',
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({"title": title, board_id: board_id}),
+            success: function(data) {
+                ejsLaneRender([data], board_id)
+                $('#new-lane').remove()
+            },
+            error: function(data) {
+                alert("Unable to add card")
+            }
+        })
+        // then re render just one card in the lane it was added to
+        // remove the add card new div from the dom
+    }
+}
+
+
+
+function moveCardLane(event) {
+    // Get target Lane ID and CardId into these variables
+    laneId = event.target.closest('.lane').id
+    cardId = event.dataTransfer.getData("text");
+
+    $.ajax({
+        url: "/api/card/move",
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({"newLaneId": laneId, "cardId": cardId}),
+        success: function(data) {
+            console.log(data)
+        },
+        error: function(data) {
+            alert("Unable to add card")
+        }
+    })
+}
