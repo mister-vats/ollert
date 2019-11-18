@@ -45,6 +45,8 @@
     </header>
     <!-- navigation -->
     <nav class="pages-nav">
+
+        <div class="pages-nav__item" onclick="newBoard()"><a class="link link--page" href="#"> + Add Board</a></div>
         {% block nav %}{% endblock %}
     </nav>
     <!-- /navigation-->
@@ -62,8 +64,8 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"
         integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="https://vise.s3.ap-south-1.amazonaws.com/static/js/ejs.min.js"></script>
-    
-    
+    <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+    <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet" />
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     {% block scripts %} {% endblock %}

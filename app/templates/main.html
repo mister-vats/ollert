@@ -8,46 +8,58 @@
     {% endblock %}
 
     {% block overlay %}
-        <div id="card-overlay hidden">
+        <div id="card-overlay" style="display:block">
             <button class="close-btn">&times;</button>
-            <h5 class="label">Members</h5>
-            <div class="collaborators">
-                <div class="member">
-                    <img src="" alt="" srcset="">
+            <div class="control-wrapper">
+                <h5 class="label">Members</h5>
+                <div class="collaborators">
+                    <div class="member">
+                        <img src="" alt="" srcset="">
+                    </div>
+                    <div class="member red">
+                        <p>A</p>
+                    </div>
+                    <div class="member blue">
+                        <p>B</p>
+                    </div>
+                    <div class="member yellow">
+                        <p>T</p>
+                    </div>
+                    <button class="add-member"> + </button>
                 </div>
-                <div class="member red">
-                    <p>A</p>
-                </div>
-                <div class="member blue">
-                    <p>B</p>
-                </div>
-                <div class="member yellow">
-                    <p>T</p>
-                </div>
-                <button class="add-member"> + </button>
             </div>
-            <h5 class="label">Due Date</h5>
-            <input type="datetime-local" name="due-date" id="dueDate">
-            <h5 class="label">Labels</h5>
-            <select name="label" id="card-label" multiple>
-                <option selected value="#F85675">Critical</option>
-                <option selected value="#4680FF">Neutral</option>
-                <option value="#feb64d">Warning</option>
-                <option value="#feb64d">Good</option>
-            </select>
-            <h5 class="label">description</h5>
-            <textarea name="description" id="card-desc" >
-
-            </textarea>
-            <h5 class="label">attachments</h5>
-            <input type="file" name="attachment" id="attachment">
+            
+            <div class="control-wrapper">
+                <h5 class="label">Due Date</h5>
+                <input type="datetime-local" name="due-date" id="dueDate">
+            </div>
+            
+            <div class="control-wrapper">
+                <h5 class="label">Labels</h5>
+                <select name="label" id="card-label" multiple>
+                    <option selected value="#F85675">Critical</option>
+                    <option selected value="#4680FF">Neutral</option>
+                    <option value="#feb64d">Warning</option>
+                    <option value="#feb64d">Good</option>
+                </select>
+            </div>
+            
+            <div class="control-wrapper">
+                <h5 class="label">description</h5>
+                <textarea name="description" id="card-desc"></textarea>
+            </div>
+            
+            <div class="control-wrapper">
+                <h5 class="label">attachments</h5>
+                <input type="file" name="attachment" id="attachment">   
+            </div>
+            
            
             <button class="btn-save-overlay">Save</button>
         </div>
         <div id="account-overlay">
 
         </div>
-        
     {% endblock%}
 
 
@@ -180,4 +192,5 @@
             </div>
         </div>
     </script>
+    
 {% endblock %}

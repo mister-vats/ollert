@@ -84,7 +84,7 @@
 
 })(window);
 
-/* Get the documentElement (<html>) to display the page in fullscreen */
+//  Get the documentElement (<html>) to display the page in fullscreen 
 var elem = document.documentElement;
 function toggleFullscreen() {
     if ((window.fullScreen) ||
@@ -121,10 +121,38 @@ function closeFullscreen() {
 }
 
 
+// while dragging we store and detect the nearest card in the dropzone where
+// where the dragged card is being dropped which is stored as global variable as 
+// it is required across different stages of Drag and Drop
+var nearest
+var oldNearest
+
+// function is triggered when drag is over (or stopped)
+// lane drop validity can be checked here (if req)
+// just before drop the nearest card in the drop zone is fetched and a visual gap
+// is added by extending margin. It looks like the lane is making space for 
+// the card being dropped
 function allowDrop(ev) {
     ev.preventDefault();
+    // nearest can be null if card dropped in the empty space between 2 cards
+    // so we are only setting oldNearest to the last nearest card 
+    if (nearest != null) {
+        oldNearest = nearest   
+    }
+    //fetching the latest nearest card
+    nearest = ev.target.closest(".card")
+    // for first case: when board is loaded again oldNearest will be null
+    if (oldNearest == null && nearest != null) {
+        nearest.classList.add("gap")
+    }
+    // switch the gap to a new nearest card 
+    if (nearest != oldNearest && nearest != null) {
+        oldNearest.classList.remove("gap")
+        nearest.classList.add("gap")
+    }
 }
 
+// triggered when drag starts
 function drag(ev) {
     var element = ev.target
     setTimeout(function () {
@@ -133,18 +161,258 @@ function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 }
 
+// triggered when card drag ends
 function dragOver(ev) {
     var element = ev.srcElement
     element.classList.remove('hide-card');
+    ele = document.getElementsByClassName("gap")
+    if(ele.length != 0){
+        ele[0].classList.remove("gap")
+    }
 }
 
+// triggered on drop over card container
+// get the data being dragged (card id) and based on user intent place the card 
 function drop(ev) {
     ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    ev.target.closest('.card-container').appendChild(document.getElementById(data));
-    console.log(ev.target.closest('.card-container'))
+    let data = document.getElementById(ev.dataTransfer.getData("text"));
+    let nearestCard = ev.target.closest('.card');
+    let parent = ev.target.closest('.card-container')
+    if (nearestCard == null) {
+        // if user places in the gap (nearestCard == null), 
+        // get the last nearest card and place above it
+        if (parent.getElementsByClassName("card").length != 0 ) {
+            oldNearest.parentNode.insertBefore(data, oldNearest)   
+        } else{
+            // if no card in the lane then append the card to lane
+            parent.append(data)
+        }
+    } else {
+        // if dropped directly over a card, then place the new card just above it
+        nearestCard.parentNode.insertBefore(data, nearestCard)   
+    }
     moveCardLane(ev)
+    oldNearest = null;
+    nearest = null;
 }
+
+function renderPage(params) {
+    (function (window) {
+
+        'use strict';
+
+        var support = { transitions: Modernizr.csstransitions },
+            // transition end event name
+            transEndEventNames = { 'WebkitTransition': 'webkitTransitionEnd', 'MozTransition': 'transitionend', 'OTransition': 'oTransitionEnd', 'msTransition': 'MSTransitionEnd', 'transition': 'transitionend' },
+            transEndEventName = transEndEventNames[Modernizr.prefixed('transition')],
+            onEndTransition = function (el, callback) {
+                var onEndCallbackFn = function (ev) {
+                    if (support.transitions) {
+                        if (ev.target != this) return;
+                        this.removeEventListener(transEndEventName, onEndCallbackFn);
+                    }
+                    if (callback && typeof callback === 'function') { callback.call(this); }
+                };
+                if (support.transitions) {
+                    el.addEventListener(transEndEventName, onEndCallbackFn);
+                }
+                else {
+                    onEndCallbackFn();
+                }
+            },
+            // the pages wrapper
+            stack = document.querySelector('.pages-stack'),
+            // the page elements
+            pages = [].slice.call(stack.children),
+            // total number of page elements
+            pagesTotal = pages.length,
+            // index of current page
+            current = 0,
+            // menu button
+            menuCtrl = document.querySelector('button.menu-button'),
+            // the navigation wrapper
+            nav = document.querySelector('.pages-nav'),
+            // the menu nav items
+            navItems = [].slice.call(nav.querySelectorAll('.link--page')),
+            // check if menu is open
+            isMenuOpen = false;
+
+        function init() {
+            buildStack();
+            initEvents();
+        }
+
+        function buildStack() {
+            var stackPagesIdxs = getStackPagesIdxs();
+
+            // set z-index, opacity, initial transforms to pages and add class page--inactive to all except the current one
+            for (var i = 0; i < pagesTotal; ++i) {
+                var page = pages[i],
+                    posIdx = stackPagesIdxs.indexOf(i);
+
+                if (current !== i) {
+                    classie.add(page, 'page--inactive');
+
+                    if (posIdx !== -1) {
+                        // visible pages in the stack
+                        page.style.WebkitTransform = 'translate3d(0,100%,0)';
+                        page.style.transform = 'translate3d(0,100%,0)';
+                    }
+                    else {
+                        // invisible pages in the stack
+                        page.style.WebkitTransform = 'translate3d(0,75%,-300px)';
+                        page.style.transform = 'translate3d(0,75%,-300px)';
+                    }
+                }
+                else {
+                    classie.remove(page, 'page--inactive');
+                }
+
+                page.style.zIndex = i < current ? parseInt(current - i) : parseInt(pagesTotal + current - i);
+
+                if (posIdx !== -1) {
+                    page.style.opacity = parseFloat(1 - 0.1 * posIdx);
+                }
+                else {
+                    page.style.opacity = 0;
+                }
+            }
+        }
+
+        // event binding
+        function initEvents() {
+            // menu button click
+            menuCtrl.addEventListener('click', toggleMenu);
+
+            // navigation menu clicks
+            navItems.forEach(function (item) {
+                // which page to open?
+                var pageid = item.getAttribute('href').slice(1);
+                item.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    openPage(pageid);
+                });
+            });
+
+            // clicking on a page when the menu is open triggers the menu to close again and open the clicked page
+            pages.forEach(function (page) {
+                var pageid = page.getAttribute('id');
+                page.addEventListener('click', function (ev) {
+                    if (isMenuOpen) {
+                        ev.preventDefault();
+                        openPage(pageid);
+                    }
+                });
+            });
+
+            // keyboard navigation events
+            document.addEventListener('keydown', function (ev) {
+                if (!isMenuOpen) return;
+                var keyCode = ev.keyCode || ev.which;
+                if (keyCode === 27) {
+                    closeMenu();
+                }
+            });
+        }
+
+        // toggle menu fn
+        function toggleMenu() {
+            if (isMenuOpen) {
+                closeMenu();
+            }
+            else {
+                openMenu();
+                isMenuOpen = true;
+            }
+        }
+
+        // opens the menu
+        function openMenu() {
+            // toggle the menu button
+            classie.add(menuCtrl, 'menu-button--open')
+            // stack gets the class "pages-stack--open" to add the transitions
+            classie.add(stack, 'pages-stack--open');
+            // reveal the menu
+            classie.add(nav, 'pages-nav--open');
+
+            // now set the page transforms
+            var stackPagesIdxs = getStackPagesIdxs();
+            for (var i = 0, len = stackPagesIdxs.length; i < len; ++i) {
+                var page = pages[stackPagesIdxs[i]];
+                page.style.WebkitTransform = 'translate3d(0, 75%, ' + parseInt(-1 * 200 - 50 * i) + 'px)'; // -200px, -230px, -260px
+                page.style.transform = 'translate3d(0, 75%, ' + parseInt(-1 * 200 - 50 * i) + 'px)';
+
+            }
+            $("header").slideUp("fast")
+        }
+
+        // closes the menu
+        function closeMenu() {
+            // same as opening the current page again
+            openPage();
+            $("header").delay(300).slideDown("fast")
+        }
+
+        // opens a page
+        function openPage(id) {
+            var futurePage = id ? document.getElementById(id) : pages[current],
+                futureCurrent = pages.indexOf(futurePage),
+                stackPagesIdxs = getStackPagesIdxs(futureCurrent);
+
+            // set transforms for the new current page
+            futurePage.style.WebkitTransform = 'translate3d(0, 0, 0)';
+            futurePage.style.transform = 'translate3d(0, 0, 0)';
+            futurePage.style.opacity = 1;
+
+            // set transforms for the other items in the stack
+            for (var i = 0, len = stackPagesIdxs.length; i < len; ++i) {
+                var page = pages[stackPagesIdxs[i]];
+                page.style.WebkitTransform = 'translate3d(0,100%,0)';
+                page.style.transform = 'translate3d(0,100%,0)';
+            }
+
+            // set current
+            if (id) {
+                current = futureCurrent;
+            }
+
+            // close menu..
+            classie.remove(menuCtrl, 'menu-button--open');
+            classie.remove(nav, 'pages-nav--open');
+            onEndTransition(futurePage, function () {
+                classie.remove(stack, 'pages-stack--open');
+                // reorganize stack
+                buildStack();
+                isMenuOpen = false;
+            });
+            $("header").delay(300).slideDown("fast")
+        }
+
+        // gets the current stack pages indexes. If any of them is the excludePage then this one is not part of the returned array
+        function getStackPagesIdxs(excludePageIdx) {
+            var nextStackPageIdx = current + 1 < pagesTotal ? current + 1 : 0,
+                nextStackPageIdx_2 = current + 2 < pagesTotal ? current + 2 : 1,
+                idxs = [],
+
+                excludeIdx = excludePageIdx || -1;
+
+            if (excludePageIdx != current) {
+                idxs.push(current);
+            }
+            if (excludePageIdx != nextStackPageIdx) {
+                idxs.push(nextStackPageIdx);
+            }
+            if (excludePageIdx != nextStackPageIdx_2) {
+                idxs.push(nextStackPageIdx_2);
+            }
+
+            return idxs;
+        }
+
+        init();
+
+    })(window); 
+} 
 
 var lanes = []
 function getBoards() {
@@ -161,222 +429,8 @@ function getBoards() {
             html = ejs.render(template, { 'boards': data })
             
             $('.pages-nav').append(html)
-        
-                // stack navigation 
-                // WARNING DO NOT TOUCH
-                ; (function (window) {
-
-                    'use strict';
-
-                    var support = { transitions: Modernizr.csstransitions },
-                        // transition end event name
-                        transEndEventNames = { 'WebkitTransition': 'webkitTransitionEnd', 'MozTransition': 'transitionend', 'OTransition': 'oTransitionEnd', 'msTransition': 'MSTransitionEnd', 'transition': 'transitionend' },
-                        transEndEventName = transEndEventNames[Modernizr.prefixed('transition')],
-                        onEndTransition = function (el, callback) {
-                            var onEndCallbackFn = function (ev) {
-                                if (support.transitions) {
-                                    if (ev.target != this) return;
-                                    this.removeEventListener(transEndEventName, onEndCallbackFn);
-                                }
-                                if (callback && typeof callback === 'function') { callback.call(this); }
-                            };
-                            if (support.transitions) {
-                                el.addEventListener(transEndEventName, onEndCallbackFn);
-                            }
-                            else {
-                                onEndCallbackFn();
-                            }
-                        },
-                        // the pages wrapper
-                        stack = document.querySelector('.pages-stack'),
-                        // the page elements
-                        pages = [].slice.call(stack.children),
-                        // total number of page elements
-                        pagesTotal = pages.length,
-                        // index of current page
-                        current = 0,
-                        // menu button
-                        menuCtrl = document.querySelector('button.menu-button'),
-                        // the navigation wrapper
-                        nav = document.querySelector('.pages-nav'),
-                        // the menu nav items
-                        navItems = [].slice.call(nav.querySelectorAll('.link--page')),
-                        // check if menu is open
-                        isMenuOpen = false;
-
-                    function init() {
-                        buildStack();
-                        initEvents();
-                    }
-
-                    function buildStack() {
-                        var stackPagesIdxs = getStackPagesIdxs();
-
-                        // set z-index, opacity, initial transforms to pages and add class page--inactive to all except the current one
-                        for (var i = 0; i < pagesTotal; ++i) {
-                            var page = pages[i],
-                                posIdx = stackPagesIdxs.indexOf(i);
-
-                            if (current !== i) {
-                                classie.add(page, 'page--inactive');
-
-                                if (posIdx !== -1) {
-                                    // visible pages in the stack
-                                    page.style.WebkitTransform = 'translate3d(0,100%,0)';
-                                    page.style.transform = 'translate3d(0,100%,0)';
-                                }
-                                else {
-                                    // invisible pages in the stack
-                                    page.style.WebkitTransform = 'translate3d(0,75%,-300px)';
-                                    page.style.transform = 'translate3d(0,75%,-300px)';
-                                }
-                            }
-                            else {
-                                classie.remove(page, 'page--inactive');
-                            }
-
-                            page.style.zIndex = i < current ? parseInt(current - i) : parseInt(pagesTotal + current - i);
-
-                            if (posIdx !== -1) {
-                                page.style.opacity = parseFloat(1 - 0.1 * posIdx);
-                            }
-                            else {
-                                page.style.opacity = 0;
-                            }
-                        }
-                    }
-
-                    // event binding
-                    function initEvents() {
-                        // menu button click
-                        menuCtrl.addEventListener('click', toggleMenu);
-
-                        // navigation menu clicks
-                        navItems.forEach(function (item) {
-                            // which page to open?
-                            var pageid = item.getAttribute('href').slice(1);
-                            item.addEventListener('click', function (ev) {
-                                ev.preventDefault();
-                                openPage(pageid);
-                            });
-                        });
-
-                        // clicking on a page when the menu is open triggers the menu to close again and open the clicked page
-                        pages.forEach(function (page) {
-                            var pageid = page.getAttribute('id');
-                            page.addEventListener('click', function (ev) {
-                                if (isMenuOpen) {
-                                    ev.preventDefault();
-                                    openPage(pageid);
-                                }
-                            });
-                        });
-
-                        // keyboard navigation events
-                        document.addEventListener('keydown', function (ev) {
-                            if (!isMenuOpen) return;
-                            var keyCode = ev.keyCode || ev.which;
-                            if (keyCode === 27) {
-                                closeMenu();
-                            }
-                        });
-                    }
-
-                    // toggle menu fn
-                    function toggleMenu() {
-                        if (isMenuOpen) {
-                            closeMenu();
-                        }
-                        else {
-                            openMenu();
-                            isMenuOpen = true;
-                        }
-                    }
-
-                    // opens the menu
-                    function openMenu() {
-                        // toggle the menu button
-                        classie.add(menuCtrl, 'menu-button--open')
-                        // stack gets the class "pages-stack--open" to add the transitions
-                        classie.add(stack, 'pages-stack--open');
-                        // reveal the menu
-                        classie.add(nav, 'pages-nav--open');
-
-                        // now set the page transforms
-                        var stackPagesIdxs = getStackPagesIdxs();
-                        for (var i = 0, len = stackPagesIdxs.length; i < len; ++i) {
-                            var page = pages[stackPagesIdxs[i]];
-                            page.style.WebkitTransform = 'translate3d(0, 75%, ' + parseInt(-1 * 200 - 50 * i) + 'px)'; // -200px, -230px, -260px
-                            page.style.transform = 'translate3d(0, 75%, ' + parseInt(-1 * 200 - 50 * i) + 'px)';
-                        }
-                    }
-
-                    // closes the menu
-                    function closeMenu() {
-                        // same as opening the current page again
-                        openPage();
-                    }
-
-                    // opens a page
-                    function openPage(id) {
-                        var futurePage = id ? document.getElementById(id) : pages[current],
-                            futureCurrent = pages.indexOf(futurePage),
-                            stackPagesIdxs = getStackPagesIdxs(futureCurrent);
-
-                        // set transforms for the new current page
-                        futurePage.style.WebkitTransform = 'translate3d(0, 0, 0)';
-                        futurePage.style.transform = 'translate3d(0, 0, 0)';
-                        futurePage.style.opacity = 1;
-
-                        // set transforms for the other items in the stack
-                        for (var i = 0, len = stackPagesIdxs.length; i < len; ++i) {
-                            var page = pages[stackPagesIdxs[i]];
-                            page.style.WebkitTransform = 'translate3d(0,100%,0)';
-                            page.style.transform = 'translate3d(0,100%,0)';
-                        }
-
-                        // set current
-                        if (id) {
-                            current = futureCurrent;
-                        }
-
-                        // close menu..
-                        classie.remove(menuCtrl, 'menu-button--open');
-                        classie.remove(nav, 'pages-nav--open');
-                        onEndTransition(futurePage, function () {
-                            classie.remove(stack, 'pages-stack--open');
-                            // reorganize stack
-                            buildStack();
-                            isMenuOpen = false;
-                        });
-                    }
-
-                    // gets the current stack pages indexes. If any of them is the excludePage then this one is not part of the returned array
-                    function getStackPagesIdxs(excludePageIdx) {
-                        var nextStackPageIdx = current + 1 < pagesTotal ? current + 1 : 0,
-                            nextStackPageIdx_2 = current + 2 < pagesTotal ? current + 2 : 1,
-                            idxs = [],
-
-                            excludeIdx = excludePageIdx || -1;
-
-                        if (excludePageIdx != current) {
-                            idxs.push(current);
-                        }
-                        if (excludePageIdx != nextStackPageIdx) {
-                            idxs.push(nextStackPageIdx);
-                        }
-                        if (excludePageIdx != nextStackPageIdx_2) {
-                            idxs.push(nextStackPageIdx_2);
-                        }
-
-                        return idxs;
-                    }
-
-                    init();
-
-                })(window);
-                // WARNING ENDS
-
+            // stack navigation 
+            renderPage()
             laneContainers = document.getElementsByClassName("lane-container")
             for(item of laneContainers){
                 $(item).width(parseInt($(item).data("lanes"))*400)
@@ -402,14 +456,11 @@ function getCards(laneId) {
     })
 }
 
-
 function renderCards() {
     for(lane of lanes){
         getCards(lane.id)
     }
 }
-
-getBoards()
 
 function ejsCardRender(data, laneId) {
     template = $('#card').html()
@@ -426,46 +477,59 @@ function ejsLaneRender(data, boardId) {
 
 function addCardToLane(laneID, btn) {
     if ($(".card.new").length == 0) {
-        console.log(laneID)
         template = $('#newcard').html()
         html = ejs.render(template)
         container = "#" + String(laneID) + "  .card-container"
         $(container).stop().animate({
             scrollTop: $(container)[0].scrollHeight
-        }, 800);
+        }, 500);
         $(container).append(html)
         $("#card-title-edit").focus()
         $(btn).text("Done")
     }else{
         // TODO handle the case where a new card already exists on the board
-        console.log("an empty card still exists")
+        if ($(btn).text() == "Done") {
+            saveCards()
+        }else{
+            $('.add-card-btn').html('Add card')
+            var card = $(".card.new")
+            $(".card.new").remove()
+            container = "#" + String(laneID) + "  .card-container"
+            $(container).stop().animate({
+                scrollTop: $(container)[0].scrollHeight
+            }, 500);
+            $(container).append(card)
+            $("#card-title-edit").focus()
+            $(btn).text("Done")
+        }
     }
 }
 
-
+function saveCards() {
+    let title = $("#card-title-edit").val()
+    let lane_id = $($("#card-title-edit").parents('.lane')).attr('id')
+    $.ajax({
+        url: '/api/card/create',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({ "title": title, lane_id: lane_id }),
+        success: function (data) {
+            ejsCardRender([data], lane_id)
+            $('.card.new').remove()
+            $('.add-card-btn').html('Add card')
+        },
+        error: function (data) {
+            alert("Unable to add card")
+        }
+    })
+}
 
 function inputSubmit(ev) {
     if (ev.keyCode == 13) {
-        let title = $("#card-title-edit").val()
-        let lane_id = $($("#card-title-edit").parents('.lane')).attr('id')
-        $.ajax({
-            url: '/api/card/create',
-            method: 'POST',
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify({"title": title, lane_id: lane_id}),
-            success: function(data) {
-                ejsCardRender([data], lane_id)
-                $('.card.new').remove()
-                $('.add-card-btn').html('Add card')
-            },
-            error: function(data) {
-                alert("Unable to add card")
-            }
-        })
+        saveCards()
     }
 }
-
 
 function addNewLane(boardID) {
     if( $("#new-lane").length == 0 ){
@@ -504,8 +568,6 @@ function newLaneSubmit(e) {
     }
 }
 
-
-
 function moveCardLane(event) {
     // Get target Lane ID and CardId into these variables
     laneId = event.target.closest('.lane').id
@@ -518,10 +580,24 @@ function moveCardLane(event) {
         dataType: 'json',
         data: JSON.stringify({"newLaneId": laneId, "cardId": cardId}),
         success: function(data) {
-            console.log(data)
+        
         },
         error: function(data) {
-            alert("Unable to add card")
+            alert("Unable to move card")
         }
     })
 }
+
+function newBoard() {
+    window.location.replace("/newBoard");
+}
+
+document.onkeydown = function (evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 27) {
+        alert('Esc key pressed.');
+    }
+};
+
+
+getBoards()
