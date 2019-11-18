@@ -31,6 +31,18 @@ def home():
     return render_template('/main.html', home="Main")
 
 
+@app.route('/signin')
+# @login_required
+def loginPage():
+    return render_template('/login.html', home="Login")
+
+
+@app.route('/newBoard')
+# @login_required
+def newBoard():
+    return render_template('/newBoard.html', home="Login")
+
+
 @app.route('/api/board/create', methods=['POST'])
 # @login_required
 def create_board():

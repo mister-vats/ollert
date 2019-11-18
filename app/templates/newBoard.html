@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ollert | New Board</title>
+</head>
+<body>
+    <div class="nameplate">
+        <div class="name">Ankush Vats</div>
+        <div class="profile-pic">
+            <img src="" alt="" srcset="">
+        </div>
+    </div>
+    <div class="form newBoard">
+        <input type="text" name="board-name" id="bname">
+        <input type="text" name="board-desc" id="bdesc">
+        <form action="http://httpbin.org/post" method="post">
+            <select data-placeholder="Begin typing a name to filter..." multiple class="chosen-select" name="test">
+                <option value=""></option>
+                <option>American Black Bear</option>
+                <option>Asiatic Black Bear</option>
+                <option>Brown Bear</option>
+                <option>Giant Panda</option>
+                <option>Sloth Bear</option>
+                <option>Sun Bear</option>
+                <option>Polar Bear</option>
+                <option>Spectacled Bear</option>
+            </select>
+            <input type="submit">
+        </form>
+    </div>
+   
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+    <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet" />
+    <script>
+        $(".chosen-select").chosen({
+            no_results_text: "Oops, nothing found!"
+        })
+    </script>
+</body>
+</html>
